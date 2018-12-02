@@ -105,19 +105,23 @@
     //滑动主体时,标题跟随滑动
     NSInteger section;
     CGPoint point =  [scrollView.panGestureRecognizer translationInView:self];
+    float rate;
     if (point.x > 0 ) {
         NSLog(@"------往左滑动");
         section = (scrollView.contentOffset.x + _mainCollectionView.frame.size.width - 1)/ _mainCollectionView.frame.size.width;//保证滑动玩之后才会高亮标题,不然会导致一开始滑动就高亮下一个标题
+        rate = (section*_mainCollectionView.frame.size.width - scrollView.contentOffset.x ) / _mainCollectionView.frame.size.width;//当前偏移比例
+        _bottomLine.frame = CGRectMake(section*_itemWidth - _itemWidth*rate + (_itemWidth - 25)/2, 0, 25 + _itemWidth*rate, 3);
     }else{
         NSLog(@"------往右滑动");
         section = scrollView.contentOffset.x / _mainCollectionView.frame.size.width;
+        rate = (scrollView.contentOffset.x - section*_mainCollectionView.frame.size.width) / _mainCollectionView.frame.size.width;//当前偏移比例
+        _bottomLine.frame = CGRectMake(section*_itemWidth + (_itemWidth - 25)/2, 0, 25 + _itemWidth*rate, 3);
     }
+    
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:0 inSection:section];
     [_titleCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
     [_titleCollectionView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
     [self setHilightStyleWithIndexPath:indexPath];
-    
-    _bottomLine.frame = CGRectMake(indexPath.section*_itemWidth + (_itemWidth - 25)/2, 0, 25, 3);
 }
 
 - (void)setHilightStyleWithIndexPath:(NSIndexPath *)indexPath {
